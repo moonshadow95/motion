@@ -6,22 +6,24 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <link rel="stylesheet" href="./style/index.css">
+    <link rel="stylesheet" href="style/style.css">
+    <script type="module" src="./dist/app.js" defer></script>
 </head>
 <body>
-<header>
-    <h1>Motion</h1>
-    <nav>
-        <ul>
-            <li>IMAGE</li>
-            <li>VIDEO</li>
-            <li>NOTE</li>
-            <li>TODO</li></ul>
-    </nav>
-</header>
-<div>
-<div>this is page component</div>
+<div class="app">
+    <header class="banner">
+        <h1 class="banner__title">Motion</h1>
+        <ul class="control-panel">
+            <li><button id="new-image" class="create-button">IMAGE</button></li>
+            <li><button id="new-video" class="create-button">VIDEO</button></li>
+            <li><button id="new-note" class="create-button">NOTE</button></li>
+            <li><button id="new-todo" class="create-button">TODO</button></li>
+        </ul>
+    </header>
+    <main class="document"></main>
+    <footer>
+        <p>&copy; Copyright by Lim Chul Jong. All rights reserved.</p>
+    </footer>
 </div>
-<footer>&copy; Copyright by Lim Chul Jong. All rights reserved.</footer>
 </body>
 </html>
