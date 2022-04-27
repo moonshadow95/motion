@@ -8,10 +8,8 @@ class App {
         this.page.attachTo(appRoot)
 
         const image = new ImageComponent('Image Title','https://picsum.photos/600/300')
-        image.attachTo(appRoot,"beforebegin")
+        image.attachTo(appRoot,"beforeend")
     }
-
 }
-
 // null 이 아니며 HTMLElement 이므로 type assertion 사용!
 new App(document.querySelector('.document')! as HTMLElement)
