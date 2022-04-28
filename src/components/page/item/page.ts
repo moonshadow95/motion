@@ -19,7 +19,7 @@ export class PageItemComponent extends BaseComponent<HTMLElement> implements Sec
     // 외부로부터 전달받은 콜백함수
     private closeListener?:OnCloseListener
     constructor(){
-        // super() 사용하여
+        // super() 사용하여 string 타입으로 받은 html 태그 생성
         super(`
             <li class="page-item">
                 <section class="page-item__body">
@@ -44,7 +44,7 @@ export class PageItemComponent extends BaseComponent<HTMLElement> implements Sec
         this.closeListener = listener
     }
 }
-// 현재 PageComponent 는 PageItemComponent 한가지 밖에 만들지 못한다.
+// 현재 PageComponent 는 PageItemComponent 한가지 밖에 만들지 못한다. -> PageComponent 에서 자체적으로 PageItemComponent 를 만들고 있었다.
 // -> DarkPageItemComponent 처럼 다른 컴포넌트를 만들고 싶다면?
 // Dependency injection
 export class PageComponent extends BaseComponent<HTMLUListElement> implements Composable{

@@ -4,6 +4,7 @@ import {NoteComponent} from "./components/page/item/note.js";
 import {TodoComponent} from "./components/page/item/todo.js";
 import {VideoComponent} from "./components/page/item/video.js";
 import {Component} from "./components/component.js";
+import {InputDialog} from "./components/dialog/dialog.js";
 
 class App {
     private readonly page : Component & Composable
@@ -24,6 +25,20 @@ class App {
 
         const video = new VideoComponent('video title','https://youtu.be/-mvim98-TWw')
         this.page.addChild(video)
+
+        const imageButton = document.querySelector('#new-image')! as HTMLButtonElement
+        // onClick 으로 콜백함수를 등록하면 기존에 있던 것을 덮어씌우므로 addEventListener 를 사용한다.
+        imageButton.addEventListener('click',()=>{
+            const dialog = new InputDialog()
+            dialog.setOnCloseListener(()=>{
+                dialog.removeFrom(document.body)
+            })
+            dialog.setOnSubmitListener(()=>{
+                // todo - 섹션을 만들어서 페이지에 추가
+                dialog.removeFrom(document.body)
+            })
+            dialog.attachTo(document.body)
+        })
     }
 }
 // null 이 아니며 HTMLElement 이므로 type assertion 사용!
