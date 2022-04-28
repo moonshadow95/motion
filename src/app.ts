@@ -1,4 +1,4 @@
-import {Composable, PageComponent} from "./components/page/item/page.js";
+import {Composable, PageComponent, PageItemComponent} from "./components/page/item/page.js";
 import {ImageComponent} from "./components/page/item/image.js";
 import {NoteComponent} from "./components/page/item/note.js";
 import {TodoComponent} from "./components/page/item/todo.js";
@@ -8,7 +8,9 @@ import {Component} from "./components/component.js";
 class App {
     private readonly page : Component & Composable
     constructor(appRoot:HTMLElement){
-        this.page = new PageComponent()
+        // 전달된 컴포넌트를 생성하고 그 안에 자식 컴포넌트들을 추가한다.
+        // PageItemComponent -> DarkPageItemComponent 로 확장 가능하다.
+        this.page = new PageComponent(PageItemComponent)
         this.page.attachTo(appRoot)
 
         const image = new ImageComponent('Image Title','https://picsum.photos/600/300')
