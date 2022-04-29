@@ -11,10 +11,9 @@ export class InputDialog extends BaseComponent<HTMLElement> implements Composabl
         super(`
             <dialog class="dialog">
                 <div class="dialog__container">
-                    <button class="close">&times;
-                        <div id="dialog__body"></div>
-                        <button class="dialog__submit">ADD</button>
-                    </button>
+                    <button class="close">&times;</button>
+                    <div id="dialog__body"></div>
+                    <button class="dialog__submit">ADD</button>
                 </div>
             </dialog>
         `)
