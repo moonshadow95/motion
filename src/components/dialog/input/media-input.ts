@@ -1,7 +1,8 @@
 import {BaseComponent} from "../../component.js";
+import {MediaData} from "../dialog.js";
 
-export class MediaSectionInput extends BaseComponent<HTMLElement> {
-    constructor(){
+export class MediaSectionInput extends BaseComponent<HTMLElement> implements MediaData {
+    constructor() {
         super(`
             <div>
                 <div class="form__container">
@@ -15,13 +16,15 @@ export class MediaSectionInput extends BaseComponent<HTMLElement> {
             </div>
         `)
     }
+
     // 사용자가 정보를 입력하고 ADD 버튼을 누르면 getter 가 DOM 요소의 title, url 을 읽어온다.
-    get title() :string{
+    get title(): string {
         const element = this.element.querySelector('#title')! as HTMLInputElement
         return element.value
 
     }
-    get url(): string{
+
+    get url(): string {
         const element = this.element.querySelector('#url')! as HTMLInputElement
         return element.value
     }
