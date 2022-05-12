@@ -1,86 +1,82 @@
-import {Composable, PageComponent, PageItemComponent} from "./components/page/item/page.js";
+import {Composable, PageComponent, PageItemComponent} from "./components/page/page.js";
 import {ImageComponent} from "./components/page/item/image.js";
+import {VideoComponent} from "./components/page/item/video.js";
+import {TodoComponent} from "./components/page/item/todo.js";
 import {NoteComponent} from "./components/page/item/note.js";
 import {Component} from "./components/component.js";
 import {InputDialog, MediaData, TextData} from "./components/dialog/dialog.js";
-import {MediaSectionInput} from "./components/dialog/input/media-input.js";
-import {VideoComponent} from "./components/page/item/video.js";
-import {TodoComponent} from "./components/page/item/todo.js";
-import {TextSectionInput} from "./components/dialog/input/text-input.js";
+import {MediaInput} from "./components/dialog/input/media-input.js";
+import {TextInput} from "./components/dialog/input/text-input.js";
 
-// InputComponentConstructor 는 MediaSectionInput 또는 TextSectionInput 클래스이다.
-// 클래스를 직접 받지 않도록 인터페이스를 만들어 디커플링 시켜준다. (MediaData, TextData)
+// 타입도 마찬가지로 인터페이스로 지정
 type InputComponentConstructor<T = (MediaData | TextData) & Component> = {
     new(): T
 }
 
 class App {
+    // 페이지 컴포넌트는 addChild() api 를 가지고 있다.
     private readonly page: Component & Composable
 
-    // appRoot 를 전달받아 그 안에 생성한 것처럼 dialog 안에 다양하게 추가해야 하므로 dialogRoot 를 받아준다.
     constructor(appRoot: HTMLElement, private dialogRoot: HTMLElement) {
-        // 전달된 컴포넌트를 생성하고 그 안에 자식 컴포넌트들을 추가한다.
-        // PageItemComponent -> DarkPageItemComponent 로 확장 가능하다.
+        // 인자로 받은 Root 에 페이지 컴포넌트를 만들어 추가한다.
         this.page = new PageComponent(PageItemComponent)
         this.page.attachTo(appRoot)
 
-        // 이미지 섹션 생성 다이얼로그
-        this.bindElementToDialog<MediaSectionInput>(
-            // selector
+        this.bindElementToDialog(
             '#new-image',
-            // MediaSectionInput 컴포넌트
-            MediaSectionInput,
-            // 위 컴포넌트를 인자로 받아 생성할 ImageComponent 생성 함수
-            (input: MediaSectionInput) => new ImageComponent(input.title, input.url)
+            MediaInput,
+            (input: MediaInput) => new ImageComponent(input.title, input.url)
         )
-
-        // 비디오 섹션 생성 다이얼로그
-        this.bindElementToDialog<MediaSectionInput>(
+        this.bindElementToDialog(
             '#new-video',
-            MediaSectionInput,
-            (input: MediaSectionInput) => new VideoComponent(input.title, input.url)
+            MediaInput,
+            (input: MediaInput) => new VideoComponent(input.title, input.url)
+        )
+        this.bindElementToDialog(
+            '#new-note',
+            TextInput,
+            (input: TextInput) => new NoteComponent(input.title, input.body)
+        )
+        this.bindElementToDialog(
+            '#new-todo',
+            TextInput,
+            (input: TextInput) => new TodoComponent(input.title, input.body)
         )
 
-        // 노트 섹션 생성 다이얼로그
-        this.bindElementToDialog<TextSectionInput>(
-            '#new-note',
-            TextSectionInput,
-            (input: TextSectionInput) => new NoteComponent(input.title, input.body)
-        )
-        // 할 일 섹션 생성 다이얼로그
-        this.bindElementToDialog<TextSectionInput>(
-            '#new-todo',
-            TextSectionInput,
-            (input: TextSectionInput) => new TodoComponent(input.title, input.body)
-        )
+        // For demo
+        this.page.addChild(new ImageComponent('IMAGE', 'https://picsum.photos/200/300'))
+        this.page.addChild(new VideoComponent('VIDEO', 'https://www.youtube.com/watch?v=wRjU9xsYRZQ'))
+        this.page.addChild(new NoteComponent('NOTE', '노노노노노노트트트트트트트ㅡ트트'))
+        this.page.addChild(new TodoComponent('TODO', '할ㄹㄹㄹㄹㄹㄹㄹㄹ일ㄹㄹㄹㄹㄹㄹㄹㄹ'))
+        this.page.addChild(new ImageComponent('IMAGE', 'https://picsum.photos/200/300'))
+        this.page.addChild(new VideoComponent('VIDEO', 'https://www.youtube.com/watch?v=wRjU9xsYRZQ'))
+        this.page.addChild(new NoteComponent('NOTE', '노노노노노노트트트트트트트ㅡ트트'))
+        this.page.addChild(new TodoComponent('TODO', '할ㄹㄹㄹㄹㄹㄹㄹㄹ일ㄹㄹㄹㄹㄹㄹㄹㄹ'))
     }
 
-    // 중복코드 복사하여 함수로 만들기
-    // 생성할 셀렉터와 생성자를 인자로 받는다.
-    // 인자로 받을 생성자는 MediaInput 또는 TextInput 을 타입으로 받는 제네릭 타입이기 때문에 제네릭 함수로 만든다.
-    // MediaSectionInput | TextSectionInput 만 받는다.
-    // MediaSectionInput, TextSectionInput 과 커플링되어 있으므로 각 Data 인터페이스를 만들어 가져온다.
-    // MediaData 혹은 TextData 인터페이스와 Component 를 동시에 따른다.
+    // - 중복 코드를 함수로 만든다.
+    // - 셀렉터를 첫번째 인자로 받는다.
+    // - 다이얼로그 속 인풋 생성자를 두번째 인자로 받는다. -> 생성자 제네릭 타입을 만들어준다.
+    // - dialogRoot 에 접근하기 위해 private 으로 만들어준다.
+    // - 세번째 인자로 콜백 함수를 받는다.
+    // - 콜백함수는 인풋을 인자로 받고, 컴포넌트를 리턴한다.
+    // - 미디어 인풋, 텍스트 인풋을 직접 사용하지 않고 언터페이스로 지정한다. -> 다른 인풋을 요구할 수도 있기 때문이다.
+    // - 미디어 데이타 혹은 텍스트 데이타이면서 컴포넌트를 구현한 아이를 받는다.
+
     private bindElementToDialog<T extends (MediaData | TextData) & Component>(
         selector: string,
         InputComponent: InputComponentConstructor<T>,
-        // MediaSectionInput 또는 TextSectionInput 을 인자로 받아서 컴포넌트를 만드는 함수
         makeSection: (input: T) => Component
     ) {
         const element = document.querySelector(selector)! as HTMLButtonElement
         element.addEventListener('click', () => {
             const dialog = new InputDialog()
-            // 인자로 받은 InputComponent 생성자를 이용하여 input 을 생성한다.
             const input = new InputComponent()
             dialog.addChild(input)
-            // dialogRoot 는 App 컴포넌트의 생성자의 인자로 받았으므로 접근하기 위해 인자에 private 을 붙여주고,
-            // 접근시 this.dialogRoot 로 접근한다.
             dialog.attachTo(this.dialogRoot)
-
             dialog.setOnCloseListener(() => {
                 dialog.removeFrom(this.dialogRoot)
             })
-
             dialog.setOnSubmitListener(() => {
                 const image = makeSection(input)
                 this.page.addChild(image)
@@ -88,7 +84,9 @@ class App {
             })
         })
     }
+
 }
 
-// null 이 아니며 HTMLElement 이므로 type assertion 사용!
-new App(document.querySelector('.document')! as HTMLElement, document.body)
+// Root 는 .document
+new App(document.querySelector('.document') as HTMLElement, document.body)
+
