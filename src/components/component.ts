@@ -5,6 +5,9 @@ export interface Component {
     attachTo(parent: HTMLElement, position?: InsertPosition): void
 
     removeFrom(parent: HTMLElement): void
+
+    // 전달받은 컴포넌트를 나 자신 안에다가 붙여넣는 함수
+    attach(component: Component, position?: InsertPosition): void
 }
 
 export class BaseComponent<T extends HTMLElement> implements Component {
@@ -26,5 +29,9 @@ export class BaseComponent<T extends HTMLElement> implements Component {
             throw Error('Parent does not match!')
         }
         parent.removeChild(this.element)
+    }
+
+    attach(component: Component, position?: InsertPosition) {
+        component.attachTo(this.element, position)
     }
 }
