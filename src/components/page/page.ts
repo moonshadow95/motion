@@ -22,6 +22,7 @@ export class PageItemComponent extends BaseComponent<HTMLLIElement> implements S
 
     constructor() {
         super(`
+            <!-- draggable='true' -->
             <li class="page-item" draggable="true">
                 <section class="page-item__body"></section>
                 <div class="page-item__controls">
@@ -36,6 +37,22 @@ export class PageItemComponent extends BaseComponent<HTMLLIElement> implements S
             // closeListener 라는 멤버변수를 만들어 외부로부터 전달받은 콜백함수를 저장한다.
             this.closeListener && this.closeListener()
         }
+        // 드래그 이벤트
+        this.element.addEventListener('dragstart', (event: DragEvent) => {
+            this.onDragStart(event)
+        })
+        this.element.addEventListener('dragend', (event: DragEvent) => {
+            this.onDragEnd(event)
+        })
+    }
+
+    // 드래그 이벤트 콜백함수
+    onDragStart(event: DragEvent) {
+        console.log(event)
+    }
+
+    onDragEnd(event: DragEvent) {
+        console.log(event)
     }
 
     // 섹션에 아이템을 추가하는 api
@@ -55,6 +72,24 @@ export class PageItemComponent extends BaseComponent<HTMLLIElement> implements S
 export class PageComponent extends BaseComponent<HTMLUListElement> implements Composable {
     constructor(private pageItemConstructor: SectionItemConstructor) {
         super('<ul class="page"></ul>')
+        // 드래그 이벤트
+        this.element.addEventListener('dragover', (event: DragEvent) => {
+            this.onDragOver(event)
+        })
+        this.element.addEventListener('drop', (event: DragEvent) => {
+            this.onDrop(event)
+        })
+    }
+
+    // 드래그 이벤트 콜백함수
+    onDragOver(event: DragEvent) {
+        event.preventDefault()
+        console.log(event)
+    }
+
+    onDrop(event: DragEvent) {
+        event.preventDefault()
+        console.log(event)
     }
 
     addChild(section: Component) {

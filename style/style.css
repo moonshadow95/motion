@@ -4,9 +4,9 @@
 
     --bg-accent-color: #2d2d2d;
 
-    --accent-color: #f64435;
+    --accent-color: #666de1;
 
-    --text-accent-color: #ffe498;
+    --text-accent-color: #b3b7ff;
 
     --text-edit-bg-color: #575757;
 
@@ -77,7 +77,7 @@ body {
 
 .banner__title {
     margin: 20px;
-    color: var(--accent-color);
+    color: var(--text-accent-color);
 }
 
 .control-panel {
@@ -164,7 +164,7 @@ body {
 .close {
     align-self: flex-end;
     padding: 0.2em;
-    color: var(--accent-color);
+    color: var(--smokywhite);
     font-size: 28px;
     font-weight: bold;
     margin: 3px;
@@ -176,7 +176,7 @@ body {
 .close:hover,
 .close:focus {
     transform: scale(1.5);
-    color: var(--shadow-color);
+    color: var(--text-accent-color);
     text-decoration: none;
     cursor: pointer;
 }
@@ -251,7 +251,7 @@ body {
 }
 
 .todo__list,
-.todo-label {
+.todo {
     padding: 1em;
     color: var(--smokywhite);
 }
