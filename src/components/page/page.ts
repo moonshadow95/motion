@@ -20,6 +20,8 @@ interface SectionContainer extends Component, Composable {
 
     // 자식 요소 포인터를 비활성/활성하는 함수
     muteChildren(state: 'mute' | 'unmute'): void
+
+    getBoundingClientRect(): DOMRect
 }
 
 type SectionItemConstructor = {
@@ -63,7 +65,7 @@ export class PageItemComponent extends BaseComponent<HTMLLIElement> implements S
         })
     }
 
-    // 드래그 이벤트 콜백함수
+    // 드래그 이벤트 콜백함수 - 드래그 상태를 알려준다.
     onDragStart(_: DragEvent) {
         this.notifyDragObservers('start')
     }
@@ -80,7 +82,7 @@ export class PageItemComponent extends BaseComponent<HTMLLIElement> implements S
         this.notifyDragObservers('leave')
     }
 
-    // 함수로 만들어 적용하여 4가지 경우를 한번에 관리한다.
+    // 함수로 만들어 4가지 경우를 한번에 관리한다.
     notifyDragObservers(state: DragState) {
         // 등록된 리스너가 있다면 등록된 리스너로 자기 자신과 드래그 상태를 전달한다.
         this.dragStateListener && this.dragStateListener(this, state)
@@ -99,6 +101,7 @@ export class PageItemComponent extends BaseComponent<HTMLLIElement> implements S
 
     // drag 되면 콜백함수를 등록하는 api
     setOnDragStateListener(listener: OnDragStateListener<PageItemComponent>) {
+        // 내부 변수에 리스너를 등록
         this.dragStateListener = listener
     }
 
@@ -109,6 +112,10 @@ export class PageItemComponent extends BaseComponent<HTMLLIElement> implements S
         } else {
             this.element.classList.remove('mute-children')
         }
+    }
+
+    getBoundingClientRect(): DOMRect {
+        return this.element.getBoundingClientRect()
     }
 }
 
@@ -147,8 +154,10 @@ export class PageComponent extends BaseComponent<HTMLUListElement> implements Co
         // 드랍시 여기서 위치를 바꿔준다.
         if (!this.dragTarget) return
         if (this.dragTarget && this.dragTarget !== this.dropTarget) {
+            const dropY = event.clientY
+            const srcElement = this.dragTarget.getBoundingClientRect()
             this.dragTarget.removeFrom(this.element)
-            this.dropTarget?.attach(this.dragTarget, 'beforebegin')
+            this.dropTarget?.attach(this.dragTarget, (dropY < srcElement.y) ? 'beforebegin' : 'afterend')
         }
     }
 
@@ -188,10 +197,10 @@ export class PageComponent extends BaseComponent<HTMLUListElement> implements Co
                     this.updateSections('unmute')
                     break
                 case 'enter':
-                    this.dragTarget = target
+                    this.dropTarget = target
                     break
                 case 'leave':
-                    this.dragTarget = undefined
+                    this.dropTarget = undefined
                     break
                 default:
                     throw Error(`unsupported state: ${state}`)
