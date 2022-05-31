@@ -22,6 +22,8 @@ interface SectionContainer extends Component, Composable {
     muteChildren(state: 'mute' | 'unmute'): void
 
     getBoundingClientRect(): DOMRect
+
+    onDropped(): void
 }
 
 type SectionItemConstructor = {
@@ -68,18 +70,28 @@ export class PageItemComponent extends BaseComponent<HTMLLIElement> implements S
     // 드래그 이벤트 콜백함수 - 드래그 상태를 알려준다.
     onDragStart(_: DragEvent) {
         this.notifyDragObservers('start')
+        this.element.classList.add('lifted')
     }
 
     onDragEnd(_: DragEvent) {
         this.notifyDragObservers('stop')
+        this.element.classList.remove('lifted')
     }
 
     onDragEnter(_: DragEvent) {
         this.notifyDragObservers('enter')
+        this.element.classList.add('drop-area')
+
     }
 
     onDragLeave(_: DragEvent) {
         this.notifyDragObservers('leave')
+        this.element.classList.remove('drop-area')
+
+    }
+
+    onDropped() {
+        this.element.classList.remove('drop-area')
     }
 
     // 함수로 만들어 4가지 경우를 한번에 관리한다.
@@ -145,12 +157,10 @@ export class PageComponent extends BaseComponent<HTMLUListElement> implements Co
     // 드래그 이벤트 콜백함수
     onDragOver(event: DragEvent) {
         event.preventDefault()
-        console.log('dragover')
     }
 
     onDrop(event: DragEvent) {
         event.preventDefault()
-        console.log('drop')
         // 드랍시 여기서 위치를 바꿔준다.
         if (!this.dragTarget) return
         if (this.dragTarget && this.dragTarget !== this.dropTarget) {
@@ -159,6 +169,7 @@ export class PageComponent extends BaseComponent<HTMLUListElement> implements Co
             this.dragTarget.removeFrom(this.element)
             this.dropTarget?.attach(this.dragTarget, (dropY < srcElement.y) ? 'beforebegin' : 'afterend')
         }
+        this.dropTarget?.onDropped()
     }
 
 
