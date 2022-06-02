@@ -8,6 +8,9 @@ export interface Component {
 
     // 전달받은 컴포넌트를 나 자신 안에다가 붙여넣는 함수
     attach(component: Component, position?: InsertPosition): void
+
+    // 이벤트와 리스너를 등록하는 함수
+    registerEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any): void
 }
 
 export class BaseComponent<T extends HTMLElement> implements Component {
@@ -33,5 +36,9 @@ export class BaseComponent<T extends HTMLElement> implements Component {
 
     attach(component: Component, position: InsertPosition = 'afterbegin') {
         component.attachTo(this.element, position)
+    }
+
+    registerEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any) {
+        this.element.addEventListener(type, listener)
     }
 }

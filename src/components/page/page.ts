@@ -1,4 +1,6 @@
 import {BaseComponent, Component} from "../component.js";
+import {Draggable, Droppable, Hoverable} from "../common/type.js";
+import {EnableDragging, EnableDrop, EnableHovering} from "../../decorators/draggable.js";
 
 // 두 컴포넌트 모두 addChild() api 를 가지고 있으므로 인터페이스로 규약한다.
 // Composable = 작성 가능, 구성 가능
@@ -12,7 +14,7 @@ type DragState = 'start' | 'stop' | 'enter' | 'leave'
 // 두번째 인자인 드래그 상태는 시작하거나 끝나거나 들어오거나 나가거나이다.
 type OnDragStateListener<T extends Component> = (target: T, state: DragState) => void
 
-interface SectionContainer extends Component, Composable {
+interface SectionContainer extends Component, Composable, Draggable, Hoverable {
     setOnCloseListener(listener: OnCloseListener): void
 
     // 드래그 상태를 듣는 함수
@@ -31,6 +33,8 @@ type SectionItemConstructor = {
 }
 
 // 페이지 컴포넌트에 들어가는 페이지 아이템 컴포넌트를 생성한다.
+@EnableDragging
+@EnableHovering
 export class PageItemComponent extends BaseComponent<HTMLLIElement> implements SectionContainer {
     private closeListener?: OnCloseListener
     private dragStateListener?: OnDragStateListener<PageItemComponent>
@@ -53,18 +57,18 @@ export class PageItemComponent extends BaseComponent<HTMLLIElement> implements S
             this.closeListener && this.closeListener()
         }
         // 드래그 이벤트
-        this.element.addEventListener('dragstart', (event: DragEvent) => {
-            this.onDragStart(event)
-        })
-        this.element.addEventListener('dragend', (event: DragEvent) => {
-            this.onDragEnd(event)
-        })
-        this.element.addEventListener('dragenter', (event: DragEvent) => {
-            this.onDragEnter(event)
-        })
-        this.element.addEventListener('dragleave', (event: DragEvent) => {
-            this.onDragLeave(event)
-        })
+        // this.element.addEventListener('dragstart', (event: DragEvent) => {
+        //     this.onDragStart(event)
+        // })
+        // this.element.addEventListener('dragend', (event: DragEvent) => {
+        //     this.onDragEnd(event)
+        // })
+        // this.element.addEventListener('dragenter', (event: DragEvent) => {
+        //     this.onDragEnter(event)
+        // })
+        // this.element.addEventListener('dragleave', (event: DragEvent) => {
+        //     this.onDragLeave(event)
+        // })
     }
 
     // 드래그 이벤트 콜백함수 - 드래그 상태를 알려준다.
@@ -133,7 +137,8 @@ export class PageItemComponent extends BaseComponent<HTMLLIElement> implements S
 
 // li 로 페이지 아이템을 담을 ul 태그, 패이지 컴포넌트를 만든다.
 // 페이지 컴포넌트는 자신을 추가할 수 있는 api 를 가지고 있어야 한다.
-export class PageComponent extends BaseComponent<HTMLUListElement> implements Composable {
+@EnableDrop
+export class PageComponent extends BaseComponent<HTMLUListElement> implements Composable, Droppable {
     // 드래그 이벤트
     // 드래그가 발생하면 그것을 기억했다가 드랍이 발생하면 위치를 변경해준다.
     // dragTarget, dropTarget 매개변수 추가
@@ -146,21 +151,13 @@ export class PageComponent extends BaseComponent<HTMLUListElement> implements Co
 
     constructor(private pageItemConstructor: SectionItemConstructor) {
         super('<ul class="page"></ul>')
-        this.element.addEventListener('dragover', (event: DragEvent) => {
-            this.onDragOver(event)
-        })
-        this.element.addEventListener('drop', (event: DragEvent) => {
-            this.onDrop(event)
-        })
     }
 
     // 드래그 이벤트 콜백함수
-    onDragOver(event: DragEvent) {
-        event.preventDefault()
+    onDragOver(_: DragEvent): void {
     }
 
     onDrop(event: DragEvent) {
-        event.preventDefault()
         // 드랍시 여기서 위치를 바꿔준다.
         if (!this.dragTarget) return
         if (this.dragTarget && this.dragTarget !== this.dropTarget) {
