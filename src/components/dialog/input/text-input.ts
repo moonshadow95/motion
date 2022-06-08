@@ -10,7 +10,7 @@ export class TextInput extends BaseComponent<HTMLInputElement> implements TextDa
                     <input id="title" type="text">
                 </div>
                 <div class="form__container">
-                    <label for="url">Body</label>
+                    <label for="body">Body</label>
                     <input type="text" id="body">
                 </div>    
             </div>
